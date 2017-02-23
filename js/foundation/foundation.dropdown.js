@@ -31,13 +31,16 @@
       S(this.scope)
         .off('.dropdown')
         .on('click.fndtn.dropdown', '[' + this.attr_name() + ']', function (e) {
+          self.close.call(self, S(this).find('[' + self.attr_name() + '-content]').not(S(this).find('#'+S(this).attr('data-dropdown'))));
           var settings = S(this).data(self.attr_name(true) + '-init') || self.settings;
           if (!settings.is_hover || Modernizr.touch) {
             e.preventDefault();
             if (S(this).parent('[data-reveal-id]').length) {
               e.stopPropagation();
             }
-            self.toggle($(this));
+            if(settings.dropdown_open_during_click !== true || (S(this).find('[data-dropdown-content]').find(e.target).length === 0 && settings.dropdown_open_during_click === true)){
+              self.toggle($(this));
+            }
           }
         })
         .on('mouseenter.fndtn.dropdown', '[' + this.attr_name() + '], [' + this.attr_name() + '-content]', function (e) {
@@ -185,8 +188,8 @@
         // No dropdown found, not continuing
         return;
       }
-
-      this.close.call(this, this.S('[' + this.attr_name() + '-content]').not(dropdown));
+      var parentDropdowns = this.S(target).parents('.f-dropdown');
+      this.close.call(this, this.S('[' + this.attr_name() + '-content]').not(dropdown).not(parentDropdowns));
 
       if (dropdown.hasClass(this.settings.active_class)) {
         this.close.call(this, dropdown);
@@ -276,7 +279,7 @@
         //get the actual width of the page and store it
         var actualBodyWidth;
         var windowWidth = window.innerWidth;
-        
+
         if (document.getElementsByClassName('row')[0]) {
           actualBodyWidth = document.getElementsByClassName('row')[0].clientWidth;
         } else {
@@ -289,7 +292,7 @@
         if (!this.hasClass('mega') && !s.ignore_repositioning) {
           var outerWidth = this.outerWidth();
           var o_left = t.offset().left;
-		  
+
           //miss top
           if (t.offset().top <= this.outerHeight()) {
             p.missTop = true;
