@@ -219,7 +219,7 @@
 
 
 
-      if (this.small()) {
+      if (this.small() && settings.disable_small_css !== true) {
         var p = this.dirs.bottom.call(dropdown, target, settings);
 
         dropdown.attr('style', '').removeClass('drop-left drop-right drop-top').css({
